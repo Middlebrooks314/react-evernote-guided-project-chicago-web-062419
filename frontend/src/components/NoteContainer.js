@@ -8,8 +8,10 @@ class NoteContainer extends Component {
     super();
     this.state = {
       notes: [],
-      selectedNote: null
+      selectedNote: {},
+      edit: false
     };
+    // this.selectedNote = this.selectedNote.bind(this)
   }
 
   // Fetching Notes from the database & setting the original state to the array of note objects
@@ -27,25 +29,35 @@ class NoteContainer extends Component {
 
 
   // method to select one note so that it can display an individual note in the content component
-  handleSelectNote = (note) => {
+  selectedNote = (id) => {
+    // console.log("noteContainer", id)
+    let clickedNote = this.state.notes.find(note => note.id === id) 
+      this.setState({
+        selectedNote: clickedNote
+      })
+      // console.log(clickedNote)
+  }
+
+  handleEditClick = () => {
     this.setState({
-      selectedNote: note
+      edit: true
     })
   }
-  // componentDidUpdate() {
-  //   console.log(this.state);
-  // }
 
-  // passing props to the Sidebar component
+  // passing props to the Sidebar & Content components
   render() {
     return (
       <Fragment>
         <Search />
         <div className="container">
-          <Sidebar notes={this.state.notes} 
-          selectNote={this.handleSelectNote} />
+          <Sidebar 
+          notes={this.state.notes} 
+          selectedNote={this.selectedNote} />
           <Content 
-          state={this.state}/>
+          selectedNote={this.state.selectedNote}
+          handleEditClick={this.state.handleEditClick}
+          edit={this.state.edit}
+          />
         </div>
       </Fragment>
     );
