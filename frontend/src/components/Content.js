@@ -11,16 +11,23 @@ import Instructions from './Instructions';
           refactor to get this Content component to work.
 */
 class Content extends Component {
-
-
-
   
+
+
+// props passed from NoteContainer 
+
   renderContent = () => {
-    if (false) {
-      return <NoteEditor />;
+    if (this.props.editingNote === true) {
+      return <NoteEditor 
+      selectedNote={this.props.selectedNote}
+      handleSave={this.props.handleSave}
+      handleCancelEdit={this.props.handleCancelEdit}
+      handleEditSubmit={this.props.handleEditSubmit}
+      />;
     } else if (this.props.selectedNote.id) {
       return <NoteViewer 
       selectedNote={this.props.selectedNote}
+      handleEditClick={this.props.handleEditClick}
       />;
     } else {
       return <Instructions />;
@@ -28,7 +35,7 @@ class Content extends Component {
   }
   
   render() {
-    console.log(this.props)
+    // console.log(this.props)
     return (
       <div className='master-detail-element detail'>
         {this.renderContent()}

@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import Search from "./Search";
 import Sidebar from "./Sidebar";
 import Content from "./Content";
+const notesURL = "http://localhost:3000/api/v1/notes";
 
 class NoteContainer extends Component {
   constructor() {
@@ -9,14 +10,13 @@ class NoteContainer extends Component {
     this.state = {
       notes: [],
       selectedNote: {},
-      edit: false
+      editingNote: false
     };
     // this.selectedNote = this.selectedNote.bind(this)
   }
 
   // Fetching Notes from the database & setting the original state to the array of note objects
   fetchNotes() {
-    const notesURL = "http://localhost:3000/api/v1/notes";
     fetch(notesURL)
       .then(resp => resp.json())
       .then(notes => this.setState({ notes }))
@@ -27,22 +27,99 @@ class NoteContainer extends Component {
     this.fetchNotes();
   }
 
-
   // method to select one note so that it can display an individual note in the content component
-  selectedNote = (id) => {
+  selectedNote = id => {
     // console.log("noteContainer", id)
-    let clickedNote = this.state.notes.find(note => note.id === id) 
-      this.setState({
-        selectedNote: clickedNote
-      })
-      // console.log(clickedNote)
-  }
+    let clickedNote = this.state.notes.find(note => note.id === id);
+    this.setState({
+      selectedNote: clickedNote,
+      editingNote: false
+    });
+    // console.log(clickedNote)
+  };
+
+  handleSave = event => {
+    event.preventDefault();
+    console.log(event.target);
+  };
 
   handleEditClick = () => {
     this.setState({
-      edit: true
+      editingNote: true
+    });
+  };
+
+  handleEditSubmit = (state, id) => {
+    console.log(state.body, state.title, id);
+    console.log(`${notesURL}/${id}`);
+
+    fetch(`${notesURL}/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({
+        title: state.title,
+        body: state.body
+      })
     })
-  }
+      .then(resp => resp.json())
+      .then(update => {
+        this.updateNotes(update);
+      })
+      .catch(err => console.log(err));
+  };
+
+  updateNotes = update => {
+    console.log(update);
+
+    const updatedNote = this.state.notes.map(note => {
+      if (note.id === update.id) {
+        return update;
+      } else {
+        return note;
+      }
+    });
+    this.setState(prevState => {
+      return {
+        notes: updatedNote
+      };
+    });
+  };
+
+  brandNewNote = () => {
+    fetch(`${notesURL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({
+        title: "default",
+        body: "default"
+      })
+    })
+      .then(resp => resp.json())
+      .then(newNote => {
+        this.renderBrandNewNote(newNote);
+      })
+      .catch(err => console.log(err));
+  };
+
+  renderBrandNewNote = newNote => {
+    this.setState({ notes: [...this.state.notes, newNote] });
+  };
+
+  handleCancelEdit = () => {
+    this.setState({
+      editingNote: false
+    });
+  };
+
+  searchNotes = () => {
+    console.log("find meeeeee");
+  };
 
   // passing props to the Sidebar & Content components
   render() {
@@ -50,13 +127,18 @@ class NoteContainer extends Component {
       <Fragment>
         <Search />
         <div className="container">
-          <Sidebar 
-          notes={this.state.notes} 
-          selectedNote={this.selectedNote} />
-          <Content 
-          selectedNote={this.state.selectedNote}
-          handleEditClick={this.state.handleEditClick}
-          edit={this.state.edit}
+          <Sidebar
+            notes={this.state.notes}
+            selectedNote={this.selectedNote}
+            brandNewNote={this.brandNewNote}
+          />
+          <Content
+            selectedNote={this.state.selectedNote}
+            handleEditClick={this.handleEditClick}
+            editingNote={this.state.editingNote}
+            handleSave={this.handleSave}
+            handleCancelEdit={this.handleCancelEdit}
+            handleEditSubmit={this.handleEditSubmit}
           />
         </div>
       </Fragment>
