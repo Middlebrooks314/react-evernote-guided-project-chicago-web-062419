@@ -9,6 +9,7 @@ return(
   <li onClick={() => props.selectedNote(props.id)}>
     <h2>{props.note.title}</h2>
     <p>{props.note.body.substring(0, 20)}</p>
+    
   </li>
 );
 }

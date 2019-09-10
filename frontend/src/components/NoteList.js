@@ -22,14 +22,3 @@ const NoteList = (props) => {
 }
 
 export default NoteList;
-
-// const mappedNotes = props.notes.map(note => <NoteItem id={note.id} key={note.id} note={note} selectedNote={props.selectedNote(note.id)} />)
-
-//   return (
-//     <ul>
-//       {mappedNotes}
-//     </ul>
-//   );
-// }
-
-// which way is better?

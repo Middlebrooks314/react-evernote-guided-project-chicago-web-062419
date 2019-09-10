@@ -6,6 +6,7 @@ class NoteEditor extends Component {
     title: this.props.selectedNote.title
   }
 
+//  [event.target.name]: event.target.value will take in any of the fields that match any of the state objects and evaluate that as the key. 
   handleEditChange = (event) => {
     console.log(event.target.value)
     this.setState({
@@ -49,8 +50,3 @@ export default NoteEditor;
 
 
 
-// make a function "handleSubmit" in this componene tto prrevent.defualt and also take in the state of the form elements and pass to the handleSave 
-
-
-// in note container - send a patch request/fetch pass as props to the noteEditor 
-// in noteEditor - handleSubmit-> preventDefault(), call props function & pass the state to it 

@@ -20,7 +20,6 @@ class Content extends Component {
     if (this.props.editingNote === true) {
       return <NoteEditor 
       selectedNote={this.props.selectedNote}
-      handleSave={this.props.handleSave}
       handleCancelEdit={this.props.handleCancelEdit}
       handleEditSubmit={this.props.handleEditSubmit}
       />;
@@ -28,6 +27,7 @@ class Content extends Component {
       return <NoteViewer 
       selectedNote={this.props.selectedNote}
       handleEditClick={this.props.handleEditClick}
+      handleDelete={this.props.handleDelete}
       />;
     } else {
       return <Instructions />;

@@ -10,7 +10,8 @@ class NoteContainer extends Component {
     this.state = {
       notes: [],
       selectedNote: {},
-      editingNote: false
+      editingNote: false,
+      searchInput: null
     };
     // this.selectedNote = this.selectedNote.bind(this)
   }
@@ -38,11 +39,6 @@ class NoteContainer extends Component {
     // console.log(clickedNote)
   };
 
-  handleSave = event => {
-    event.preventDefault();
-    console.log(event.target);
-  };
-
   handleEditClick = () => {
     this.setState({
       editingNote: true
@@ -65,26 +61,24 @@ class NoteContainer extends Component {
       })
     })
       .then(resp => resp.json())
-      .then(update => {
-        this.updateNotes(update);
-      })
+      .then(update => this.updateNotes(update))
+      .then(this.handleCancelEdit())
       .catch(err => console.log(err));
   };
 
   updateNotes = update => {
     console.log(update);
 
-    const updatedNote = this.state.notes.map(note => {
+    const updatedNoteArray = this.state.notes.map(note => {
       if (note.id === update.id) {
         return update;
       } else {
         return note;
       }
     });
-    this.setState(prevState => {
-      return {
-        notes: updatedNote
-      };
+    this.setState({
+      notes: updatedNoteArray,
+      selectedNote: update
     });
   };
 
@@ -103,12 +97,15 @@ class NoteContainer extends Component {
       .then(resp => resp.json())
       .then(newNote => {
         this.renderBrandNewNote(newNote);
+        console.log(newNote);
       })
       .catch(err => console.log(err));
   };
 
   renderBrandNewNote = newNote => {
-    this.setState({ notes: [...this.state.notes, newNote] });
+    this.setState(prevState => ({
+      notes: [...prevState.notes, newNote]
+    }));
   };
 
   handleCancelEdit = () => {
@@ -117,18 +114,40 @@ class NoteContainer extends Component {
     });
   };
 
+  handleSearch = event => {
+    this.setState({
+      searchInput: event.target.value
+    });
+  };
+
   searchNotes = () => {
-    console.log("find meeeeee");
+    return this.state.notes.filter(
+      note => note.title === this.state.searchInput
+    );
+  };
+
+  handleDelete = id => {
+    console.log("delete", id);
+    fetch(`${notesURL}/${id}`, {
+      method: "DELETE"
+    }).then(console.log("deleted!!!"));
   };
 
   // passing props to the Sidebar & Content components
   render() {
+   
+    console.log(this.state.searchInput)
     return (
       <Fragment>
-        <Search />
+        <Search
+          handleSearch={this.handleSearch}
+          searchNotes={this.searchNotes}
+        />
         <div className="container">
           <Sidebar
-            notes={this.state.notes}
+            notes={
+              this.state.searchInput ? this.searchNotes() : this.state.notes
+            }
             selectedNote={this.selectedNote}
             brandNewNote={this.brandNewNote}
           />
@@ -136,9 +155,9 @@ class NoteContainer extends Component {
             selectedNote={this.state.selectedNote}
             handleEditClick={this.handleEditClick}
             editingNote={this.state.editingNote}
-            handleSave={this.handleSave}
             handleCancelEdit={this.handleCancelEdit}
             handleEditSubmit={this.handleEditSubmit}
+            handleDelete={this.handleDelete}
           />
         </div>
       </Fragment>
