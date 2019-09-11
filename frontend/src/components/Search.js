@@ -7,7 +7,7 @@ const Search = (props) => {
         id="search-bar"
         type="text"
         placeholder="Search Notes"
-        onChange={props.handleSearch }
+        onChange={props.handleSearch}
       />
     </div>
   );
