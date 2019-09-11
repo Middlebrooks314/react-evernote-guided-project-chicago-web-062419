@@ -128,7 +128,7 @@ class NoteContainer extends Component {
   //conditional rendering occurs in the SideBar 'notes' props. 
   searchNotes = () => {
     return this.state.notes.filter(note =>
-      note.title.includes(this.state.searchInput)
+      note.title.includes(this.state.searchInput) || note.body.includes(this.state.searchInput)
     );
   };
 
