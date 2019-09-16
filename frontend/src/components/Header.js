@@ -4,7 +4,7 @@ const Header = () => {
   return (
     <div className="nav-bar">
       <ul>
-        <li className="nav-item"><h2>List</h2></li>
+        <li className="nav-item"><h2>Sticky Notes</h2></li>
       </ul>
     </div>
   );

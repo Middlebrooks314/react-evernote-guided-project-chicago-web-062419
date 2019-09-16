@@ -11,7 +11,7 @@ class NoteContainer extends Component {
       notes: [],
       selectedNote: {},
       editingNote: false,
-      searchInput: null
+      searchInput: ''
     };
   }
 
@@ -69,13 +69,14 @@ class NoteContainer extends Component {
   //takes in the response from the PATCH fetch request, maps over the notesArray and finds the one that matches the id of the updated note and replaces it with the updated version of the note and updates the state to the notesArray with the updated note in it. The selectedNote state is updated to the updated note so that the NoteViewer will show the current changes 
   updateNotes = update => {
     
-    const updatedNoteArray = this.state.notes.map(note => {
-      if (note.id === update.id) {
-        return update;
-      } else {
-        return note;
-      }
-    });
+    const updatedNoteArray = this.state.notes.map(note => (note.id === update.id) ? update : note);
+    //   if (note.id === update.id) {
+    //     return update;
+    //   } else {
+    //     return note;
+    //   }
+    
+    
     this.setState({
       notes: updatedNoteArray,
       selectedNote: update
@@ -128,18 +129,20 @@ class NoteContainer extends Component {
   //conditional rendering occurs in the SideBar 'notes' props. 
   searchNotes = () => {
     return this.state.notes.filter(note =>
-      note.title.includes(this.state.searchInput) || note.body.includes(this.state.searchInput)
+      note.title.toLowerCase().includes(this.state.searchInput) || note.body.toLowerCase().includes(this.state.searchInput)
     );
   };
 
-  // passed through props to the noteViewer that has an onClick function, takes in the id of the note and sends a DELETE fetch to the database. invokes the original fetchNotes function so that it will grab the most updated notes array from the database. Also clears the noteViewer by updating the selectedNote state to be empty.
+  // passed through props to the noteViewer that has an onClick function, takes in the id of the note and sends a DELETE fetch to the database. filters through the notes array to return all the notes that dont equal the deleted note Also clears the noteViewer by updating the selectedNote state to be empty.
   handleDelete = id => {
     fetch(`${notesURL}/${id}`, {
       method: "DELETE"
     }).then(() => {
-      this.fetchNotes();
+      // this.fetchNotes();
+      let notDeletedNotes = this.state.notes.filter(note => note.id !== id)
       this.setState({
-        selectedNote: {}
+        selectedNote: {}, 
+        notes: notDeletedNotes
       });
     });
   };
